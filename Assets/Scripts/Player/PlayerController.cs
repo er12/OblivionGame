@@ -1,39 +1,55 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
+[RequireComponent(typeof(Rigidbody2D))]
 public class PlayerController : MonoBehaviour
 {
-    void Start()
-    {
-        player.Rigidbody.velocity = new Vector2(movement.x * player.moveSpeedInHUB, movement.y * player.moveSpeedInHUB);
+    public float moveSpeed = 5f;
+    public float jumpForce = 12f;
 
+    private Rigidbody2D rb;
+    private PlayerInputActions input;
+    private Vector2 moveInput;
+    private bool isGrounded;
+    private bool jumpPressed;
+
+    [Header("Ground Check")]
+    public Transform groundCheck;
+    public float groundRadius = 0.1f;
+    public LayerMask groundLayer;
+
+    void Awake()
+    {
+        rb = GetComponent<Rigidbody2D>();
+        input = new PlayerInputActions();
     }
 
-    // Update is called once per frame
+    void OnEnable()
+    {
+        input.Player.Enable();
+        input.Player.Move.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
+        input.Player.Move.canceled += ctx => moveInput = Vector2.zero;
+        input.Player.Jump.performed += ctx => jumpPressed = true;
+    }
+
+    void OnDisable()
+    {
+        input.Player.Disable();
+    }
+
     void Update()
     {
-
-        movement.x = player.move.ReadValue<Vector2>().x;
-        movement.y = player.move.ReadValue<Vector2>().y;
-        if (movement.x != 0)
-        {
-            if (movement.x > 0 && !player.isPlayerFacingRight)
-            {
-                PlayerFlipped.Invoke();
-            }
-            else if (movement.x < 0 && player.isPlayerFacingRight)
-            {
-                PlayerFlipped.Invoke();
-            }
-        }
-        else if (movement.x == 0 && movement.y == 0)
-        {
-            player.TransitionToState(player.PlayerIdleInHUBState);
-        }
-
+        isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundRadius, groundLayer);
     }
-    
-    public override void FixUpdate(PlayerController player)
+
+    void FixedUpdate()
     {
-        player.Rigidbody.velocity = new Vector2(movement.x * player.moveSpeedInHUB, movement.y * player.moveSpeedInHUB);
+        rb.velocity = new Vector2(moveInput.x * moveSpeed, rb.velocity.y);
+
+        if (jumpPressed && isGrounded)
+        {
+            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+            jumpPressed = false;
+        }
     }
 }
