@@ -1,9 +1,14 @@
 using UnityEngine;
-using System.Collections.Generic;
 
 public class PlayerStateMachine : MonoBehaviour
 {
     private IPlayerState currentState;
+
+    public void Initialize(IPlayerState startingState)
+    {
+        currentState = startingState;
+        currentState.Enter();
+    }
 
     public void ChangeState(IPlayerState newState)
     {
@@ -12,12 +17,12 @@ public class PlayerStateMachine : MonoBehaviour
         currentState.Enter();
     }
 
-    private void Update()
+    public void UpdateState()
     {
         currentState?.Update();
     }
 
-    private void FixedUpdate()
+    public void FixedUpdateState()
     {
         currentState?.FixedUpdate();
     }
