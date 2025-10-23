@@ -1,7 +1,9 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Assets.Scripts.Player.States;
 
-[RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(Animator), typeof(Rigidbody2D))]
+
 public class PlayerController : MonoBehaviour
 {
     public float moveSpeed = 5f;
@@ -18,8 +20,10 @@ public class PlayerController : MonoBehaviour
     public float groundRadius = 0.1f;
     public LayerMask groundLayer;
 
-    private PlayerStateMachine stateMachine;
 
+
+    private PlayerStateMachine stateMachine;
+    // States
 
     void Awake()
     {
@@ -44,26 +48,17 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
-        // stateMachine.Initialize(new PlayerIdleState(this, stateMachine));
     }
 
     void Update()
     {
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundRadius, groundLayer);
-        // stateMachine.UpdateState();
+        stateMachine.UpdateState();
     }
 
     void FixedUpdate()
     {
-
-        //stateMachine.FixedUpdateState();
-
-        rb.linearVelocity = new Vector2(moveInput.x * moveSpeed, rb.linearVelocity.y);
-
-        if (jumpPressed && isGrounded)
-        {
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
-            jumpPressed = false;
-        }
+        stateMachine.FixedUpdateState();
     }
+
 }
