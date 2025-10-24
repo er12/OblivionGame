@@ -6,12 +6,14 @@ using Assets.Scripts.Player.States;
 
 public class PlayerController : MonoBehaviour
 {
-    public float moveSpeed = 5f;
+    public float runSpeed = 5f;
     public float jumpForce = 12f;
 
     [HideInInspector] public Rigidbody2D rb;
+    [HideInInspector] public SpriteRenderer spriteRenderer;
+
     [HideInInspector] public PlayerInputActions input;
-    [HideInInspector] public Vector2 moveInput;
+    [HideInInspector] public float moveInput;
     [HideInInspector] public bool isGrounded;
     [HideInInspector] public bool jumpPressed;
 
@@ -28,6 +30,7 @@ public class PlayerController : MonoBehaviour
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
         input = new PlayerInputActions();
         stateMachine = GetComponent<PlayerStateMachine>();
 
@@ -36,8 +39,8 @@ public class PlayerController : MonoBehaviour
     void OnEnable()
     {
         input.Player.Enable();
-        input.Player.Move.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
-        input.Player.Move.canceled += ctx => moveInput = Vector2.zero;
+        input.Player.Move.performed += ctx => moveInput = ctx.ReadValue<float>();
+        input.Player.Move.canceled += ctx => moveInput = 0f;
         input.Player.Jump.performed += ctx => jumpPressed = true;
     }
 
@@ -59,6 +62,13 @@ public class PlayerController : MonoBehaviour
     void FixedUpdate()
     {
         stateMachine.FixedUpdateState();
+    }
+
+    public void FlipCharacter(float direction)
+    {
+        Vector3 scale = transform.localScale;
+        scale.x = Mathf.Sign(direction) * Mathf.Abs(scale.x);
+        transform.localScale = scale;
     }
 
 }

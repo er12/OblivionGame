@@ -36,14 +36,27 @@ namespace Assets.Scripts.Player.States
 
         }
 
-        void HandleInput()
+        private void HandleInput()
         {
-            if (Input.GetKey(KeyCode.RightArrow))
-            {
-                Debug.Log("right arrow");
+            float moveInput = player.moveInput;
 
-                //stateMachine.ChangeState(player.runState);
+            // 1️⃣ Transition to Running if horizontal input
+            if (Mathf.Abs(moveInput) > 0.1f)
+            {
+                stateMachine.ChangeState(stateMachine.runState);
+                return;
             }
+
+            // 2️⃣ Transition to Jumping if jump pressed
+            if (player.jumpPressed)
+            {
+                player.jumpPressed = false; // reset
+                Debug.Log("Jump pressed");
+                // stateMachine.ChangeState(player.jumpState);
+                return;
+            }
+
+            // 3️⃣ Optional: other transitions like attack, dash, etc.
         }
     }
 }
