@@ -40,11 +40,11 @@ namespace Assets.Scripts.Player.States
 
             // Transition to Jumping if jump pressed
             if (player.jumpPressed)
-            {
-                player.jumpPressed = false; // reset
-                //stateMachine.ChangeState(player.jumpState);
-                return;
-            }
+                {
+                    
+                    stateMachine.ChangeState(stateMachine.jumpState);
+                    return;
+                }
 
             // Optional: transitions to other states like attack, dash, etc.
         }

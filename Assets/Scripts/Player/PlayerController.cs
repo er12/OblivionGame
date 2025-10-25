@@ -22,6 +22,9 @@ public class PlayerController : MonoBehaviour
     public float groundRadius = 0.1f;
     public LayerMask groundLayer;
 
+    public bool IsFalling => !isGrounded && rb.linearVelocity.y < 0;
+
+
 
 
     private PlayerStateMachine stateMachine;
@@ -51,12 +54,14 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
+           
     }
 
     void Update()
     {
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundRadius, groundLayer);
         stateMachine.UpdateState();
+     
     }
 
     void FixedUpdate()
