@@ -623,7 +623,7 @@ GameObject:
   - component: {fileID: 1415895584}
   - component: {fileID: 1415895583}
   - component: {fileID: 1415895582}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Tilemap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1268,6 +1268,10 @@ PrefabInstance:
       propertyPath: m_Constraints
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 966132847951921564, guid: 9386527c62fc91b41abcc5671735c7c3, type: 3}
+      propertyPath: m_GravityScale
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 3739139142590952754, guid: 9386527c62fc91b41abcc5671735c7c3, type: 3}
       propertyPath: m_Name
       value: Player
@@ -1311,6 +1315,10 @@ PrefabInstance:
     - target: {fileID: 7218320418397025138, guid: 9386527c62fc91b41abcc5671735c7c3, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7731294866059720399, guid: 9386527c62fc91b41abcc5671735c7c3, type: 3}
+      propertyPath: groundLayer.m_Bits
+      value: 2048
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

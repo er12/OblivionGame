@@ -45,6 +45,8 @@ public class PlayerController : MonoBehaviour
         input.Player.Move.performed += ctx => moveInput = ctx.ReadValue<float>();
         input.Player.Move.canceled += ctx => moveInput = 0f;
         input.Player.Jump.performed += ctx => jumpPressed = true;
+        input.Player.Attack.performed += ctx => stateMachine.ChangeState(stateMachine.attackState);
+
     }
 
     void OnDisable()

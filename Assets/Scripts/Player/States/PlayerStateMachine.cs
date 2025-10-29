@@ -18,6 +18,8 @@ namespace Assets.Scripts.Player.States
             idleState = new PlayerIdleState(playerController, this);
             runState = new PlayerRunningState(playerController, this);
             jumpState = new PlayerJumpingState(playerController, this);
+            attackState = new PlayerAttackingState(playerController, this); 
+
 
             Initialize(idleState);  // start with idle
         }
