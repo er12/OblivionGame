@@ -38,9 +38,9 @@ namespace Assets.Scripts.Player.States
             {
                 attackFinished = true;
                 if (Mathf.Abs(player.moveInput) > 0.1f)
-                    stateMachine.ChangeState(player.stateMachine.runState);
+                    stateMachine.ChangeState(stateMachine.runState);
                 else
-                    stateMachine.ChangeState(player.stateMachine.idleState);
+                    stateMachine.ChangeState(stateMachine.idleState);
             }
         }
 

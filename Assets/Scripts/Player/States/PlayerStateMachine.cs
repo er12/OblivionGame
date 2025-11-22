@@ -4,11 +4,12 @@ namespace Assets.Scripts.Player.States
 {
     public class PlayerStateMachine : StateMachine<IPlayerState>
     {
-        private PlayerController playerController; 
+        private PlayerController playerController;
 
         public PlayerIdleState idleState;
         public PlayerRunningState runState;
-         public PlayerJumpingState jumpState;
+        public PlayerJumpingState jumpState;
+        public PlayerAttackingState attackState;
 
         void Awake()
         {
@@ -18,7 +19,7 @@ namespace Assets.Scripts.Player.States
             idleState = new PlayerIdleState(playerController, this);
             runState = new PlayerRunningState(playerController, this);
             jumpState = new PlayerJumpingState(playerController, this);
-            attackState = new PlayerAttackingState(playerController, this); 
+            attackState = new PlayerAttackingState(playerController, this);
 
 
             Initialize(idleState);  // start with idle
