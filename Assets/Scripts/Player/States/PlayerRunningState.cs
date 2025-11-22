@@ -32,7 +32,7 @@ namespace Assets.Scripts.Player.States
             float moveInput = player.moveInput;
 
             // Transition to Idle if no horizontal input
-            if (Mathf.Abs(moveInput) < 0.1f)
+            if (Mathf.Abs(moveInput) < PlayerController.movementThreshold)
             {
                 stateMachine.ChangeState(stateMachine.idleState);
                 return;

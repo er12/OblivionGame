@@ -9,6 +9,8 @@ namespace Assets.Scripts.Player.States
     public class PlayerIdleState : PlayerStateBase
     {
 
+
+
         int current_code;
 
         public PlayerIdleState(PlayerController player, PlayerStateMachine stateMachine)
@@ -18,6 +20,8 @@ namespace Assets.Scripts.Player.States
         public override void Enter()
         {
             Debug.Log("Player entered Idle state");
+            player.animator.SetBool("isIdle", true);
+            player.animator.SetBool("isRunning", false);
 
         }
 
@@ -33,6 +37,7 @@ namespace Assets.Scripts.Player.States
 
         public override void Exit()
         {
+            player.animator.SetBool("isIdle", false);
 
         }
 
@@ -41,7 +46,7 @@ namespace Assets.Scripts.Player.States
             float moveInput = player.moveInput;
 
             // 1️⃣ Transition to Running if horizontal input
-            if (Mathf.Abs(moveInput) > 0.1f)
+            if (Mathf.Abs(moveInput) > PlayerController.movementThreshold)
             {
                 stateMachine.ChangeState(stateMachine.runState);
                 return;
@@ -60,8 +65,8 @@ namespace Assets.Scripts.Player.States
 
             if (player.jumpPressed)
             {
-                
-                stateMachine.ChangeState(stateMachine.jumpState); 
+
+                stateMachine.ChangeState(stateMachine.jumpState);
                 return;
             }
         }

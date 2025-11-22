@@ -11,6 +11,8 @@ public class PlayerController : MonoBehaviour
 
     [HideInInspector] public Rigidbody2D rb;
     [HideInInspector] public SpriteRenderer spriteRenderer;
+    public Animator animator;   // reference
+
 
     [HideInInspector] public PlayerInputActions input;
     [HideInInspector] public float moveInput;
@@ -24,6 +26,11 @@ public class PlayerController : MonoBehaviour
 
     public bool IsFalling => !isGrounded && rb.linearVelocity.y < 0;
 
+    public static float movementThreshold = 0.1f;
+
+
+
+
 
 
 
@@ -36,6 +43,8 @@ public class PlayerController : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         input = new PlayerInputActions();
         stateMachine = GetComponent<PlayerStateMachine>();
+        animator = GetComponent<Animator>();
+
 
     }
 
@@ -56,14 +65,17 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
-           
+
     }
 
     void Update()
     {
+        animator.SetFloat("Speed", Mathf.Abs(moveInput));
+        Debug.Log("input" + moveInput);
+
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundRadius, groundLayer);
         stateMachine.UpdateState();
-     
+
     }
 
     void FixedUpdate()
