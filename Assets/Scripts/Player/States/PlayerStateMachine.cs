@@ -21,7 +21,6 @@ namespace Assets.Scripts.Player.States
             jumpState = new PlayerJumpingState(playerController, this);
             attackState = new PlayerAttackingState(playerController, this);
 
-
             Initialize(idleState);  // start with idle
         }
 

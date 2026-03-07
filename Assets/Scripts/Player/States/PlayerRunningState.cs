@@ -53,9 +53,9 @@ namespace Assets.Scripts.Player.States
         private void HandleMovement()
         {
             float moveInput = player.moveInput;
-            Rigidbody2D rb = player.rb;
+            Rigidbody rb = player.rb;
 
-            rb.linearVelocity = new Vector2(moveInput * player.runSpeed, rb.linearVelocity.y);
+            rb.linearVelocity = new Vector3(moveInput * player.runSpeed, rb.linearVelocity.y, rb.linearVelocity.z);
 
             if (moveInput != 0)
                 player.FlipCharacter(moveInput);

@@ -13,8 +13,8 @@ namespace Assets.Scripts.Player.States
         {
             Debug.Log("Player entered Jumping state");
 
-            // Aplicar impulso de salto
-            player.rb.linearVelocity = new Vector2(player.rb.linearVelocity.x, player.jumpForce);
+            // Apply jump impulse
+            player.rb.linearVelocity = new Vector3(player.rb.linearVelocity.x, player.jumpForce, player.rb.linearVelocity.z);
             // hasJumped = true;
             player.jumpPressed = false; 
         }
@@ -46,10 +46,10 @@ namespace Assets.Scripts.Player.States
         private void HandleAirMovement()
         {
             float moveInput = player.moveInput;
-            Rigidbody2D rb = player.rb;
+            Rigidbody rb = player.rb;
 
-            // Permitir moverse un poco en el aire
-            rb.linearVelocity = new Vector2(moveInput * player.runSpeed, rb.linearVelocity.y);
+            // Allow movement in the air
+            rb.linearVelocity = new Vector3(moveInput * player.runSpeed, rb.linearVelocity.y, rb.linearVelocity.z);
 
             if (moveInput != 0)
                 player.FlipCharacter(moveInput);

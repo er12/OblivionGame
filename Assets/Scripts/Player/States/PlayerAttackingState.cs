@@ -22,10 +22,10 @@ namespace Assets.Scripts.Player.States
             attackFinished = false;
             attackTimer = 0f;
 
-            // Detener movimiento horizontal al atacar
-            player.rb.linearVelocity = new Vector2(0, player.rb.linearVelocity.y);
+            // Stop horizontal movement when attacking
+            player.rb.linearVelocity = new Vector3(0, player.rb.linearVelocity.y, 0);
 
-            // Activar animacion
+            // Activate animation
             animator.Play("Attack"); 
         }
 
@@ -46,8 +46,8 @@ namespace Assets.Scripts.Player.States
 
         public override void FixedUpdate()
         {
-            // Mantener al jugador quieto horizontalmente
-            player.rb.linearVelocity = new Vector2(0, player.rb.linearVelocity.y);
+            // Keep player still horizontally
+            player.rb.linearVelocity = new Vector3(0, player.rb.linearVelocity.y, 0);
         }
 
         public override void Exit()

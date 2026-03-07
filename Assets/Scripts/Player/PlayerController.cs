@@ -2,15 +2,14 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using Assets.Scripts.Player.States;
 
-[RequireComponent(typeof(Animator), typeof(Rigidbody2D))]
+[RequireComponent(typeof(Animator), typeof(Rigidbody))]
 
 public class PlayerController : MonoBehaviour
 {
     public float runSpeed = 5f;
     public float jumpForce = 12f;
 
-    [HideInInspector] public Rigidbody2D rb;
-    [HideInInspector] public SpriteRenderer spriteRenderer;
+    [HideInInspector] public Rigidbody rb;
     public Animator animator;   // reference
 
 
@@ -29,18 +28,12 @@ public class PlayerController : MonoBehaviour
     public static float movementThreshold = 0.1f;
 
 
-
-
-
-
-
     private PlayerStateMachine stateMachine;
     // States
 
     void Awake()
     {
-        rb = GetComponent<Rigidbody2D>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
+        rb = GetComponent<Rigidbody>();
         input = new PlayerInputActions();
         stateMachine = GetComponent<PlayerStateMachine>();
         animator = GetComponent<Animator>();
@@ -73,7 +66,7 @@ public class PlayerController : MonoBehaviour
         animator.SetFloat("Speed", Mathf.Abs(moveInput));
         Debug.Log("input" + moveInput);
 
-        isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundRadius, groundLayer);
+        isGrounded = Physics.OverlapSphere(groundCheck.position, groundRadius, groundLayer).Length > 0;
         stateMachine.UpdateState();
 
     }
@@ -85,9 +78,11 @@ public class PlayerController : MonoBehaviour
 
     public void FlipCharacter(float direction)
     {
-        Vector3 scale = transform.localScale;
-        scale.x = Mathf.Sign(direction) * Mathf.Abs(scale.x);
-        transform.localScale = scale;
+        // For 2.5D, rotate the character model on the Y axis
+        if (direction > 0)
+            transform.rotation = Quaternion.Euler(0, 0, 0);
+        else if (direction < 0)
+            transform.rotation = Quaternion.Euler(0, 180, 0);
     }
 
 }
