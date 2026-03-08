@@ -2,15 +2,15 @@ using UnityEngine;
 
 namespace Assets.Scripts.Player.States
 {
-    public class PlayerRunningState : PlayerStateBase
+    public class PlayerWalkingState : PlayerStateBase
     {
-        public PlayerRunningState(PlayerController player, PlayerStateMachine stateMachine) 
+        public PlayerWalkingState(PlayerController player, PlayerStateMachine stateMachine) 
             : base(player, stateMachine) { }
 
         public override void Enter()
         {
-            Debug.Log("Player entered Running state");
-            player.animator.SetBool("IsRunning", true);
+            Debug.Log("Player entered Walking state");
+            player.animator.SetBool("IsRunning", false);
         }
 
         public override void Update()
@@ -32,17 +32,17 @@ namespace Assets.Scripts.Player.States
         {
             float moveInput = player.moveInput;
 
-            // Transition to Idle if no input
+            // Transition to Idle if no horizontal input
             if (Mathf.Abs(moveInput) < PlayerController.movementThreshold)
             {
                 stateMachine.ChangeState(stateMachine.idleState);
                 return;
             }
 
-            // Transition to Walking if input is low
-            if (Mathf.Abs(moveInput) < 0.7f)
+            // Transition to Running if input is strong enough (no Shift key needed)
+            if (Mathf.Abs(moveInput) > 0.7f)
             {
-                stateMachine.ChangeState(stateMachine.walkingState);
+                stateMachine.ChangeState(stateMachine.runState);
                 return;
             }
 
@@ -59,8 +59,11 @@ namespace Assets.Scripts.Player.States
             float moveInput = player.moveInput;
             Rigidbody rb = player.rb;
 
-            // Smooth velocity transition to avoid jumpiness
-            float targetVelocity = moveInput * player.runSpeed;
+            // Walk at half the run speed - smooth velocity change
+            float walkSpeed = player.runSpeed * 0.5f;
+            float targetVelocity = moveInput * walkSpeed;
+            
+            // Smoothly transition velocity to avoid jumpiness
             float currentVelocity = rb.linearVelocity.x;
             float newVelocity = Mathf.Lerp(currentVelocity, targetVelocity, Time.fixedDeltaTime * 5f);
             

@@ -1,28 +1,17 @@
-using System.Diagnostics;
-using System.Transactions;
 using UnityEngine;
-using Debug = UnityEngine.Debug;
-
 
 namespace Assets.Scripts.Player.States
 {
     public class PlayerIdleState : PlayerStateBase
     {
-
-
-
-        int current_code;
-
         public PlayerIdleState(PlayerController player, PlayerStateMachine stateMachine)
             : base(player, stateMachine) { }
-
 
         public override void Enter()
         {
             Debug.Log("Player entered Idle state");
-            player.animator.SetBool("isIdle", true);
-            player.animator.SetBool("isRunning", false);
-
+            player.animator.SetBool("Idle", true);
+            player.animator.SetBool("IsRunning", false);
         }
 
         public override void Update()
@@ -32,40 +21,27 @@ namespace Assets.Scripts.Player.States
 
         public override void FixedUpdate()
         {
-
         }
 
         public override void Exit()
         {
-            player.animator.SetBool("isIdle", false);
-
+            player.animator.SetBool("Idle", false);
         }
 
         private void HandleInput()
         {
             float moveInput = player.moveInput;
 
-            // 1️⃣ Transition to Running if horizontal input
+            // Transition to Walking if horizontal input detected
             if (Mathf.Abs(moveInput) > PlayerController.movementThreshold)
             {
-                stateMachine.ChangeState(stateMachine.runState);
+                stateMachine.ChangeState(stateMachine.walkingState);
                 return;
             }
 
-            // 2️⃣ Transition to Jumping if jump pressed
-            // if (player.jumpPressed)
-            // {
-            //     player.jumpPressed = false; // reset
-            //     Debug.Log("Jump pressed");
-            //     // stateMachine.ChangeState(player.jumpState);
-            //     return;
-            // }
-
-            // 3️⃣ Optional: other transitions like attack, dash, etc.
-
+            // Transition to Jumping if jump pressed
             if (player.jumpPressed)
             {
-
                 stateMachine.ChangeState(stateMachine.jumpState);
                 return;
             }

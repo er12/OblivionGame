@@ -4,16 +4,12 @@ namespace Assets.Scripts.Player.States
 {
     public class PlayerAttackingState : PlayerStateBase
     {
-        private Animator animator;
         private bool attackFinished;
-        private float attackDuration = 0.5f; // duración del ataque en segundos
+        private float attackDuration = 0.5f;
         private float attackTimer;
 
         public PlayerAttackingState(PlayerController player, PlayerStateMachine stateMachine)
-            : base(player, stateMachine)
-        {
-            animator = player.GetComponent<Animator>();
-        }
+            : base(player, stateMachine) { }
 
         public override void Enter()
         {
@@ -26,19 +22,19 @@ namespace Assets.Scripts.Player.States
             player.rb.linearVelocity = new Vector3(0, player.rb.linearVelocity.y, 0);
 
             // Activate animation
-            animator.Play("Attack"); 
+            player.animator.SetBool("IsAttacking", true);
         }
 
         public override void Update()
         {
             attackTimer += Time.deltaTime;
 
-            // Si la animacion o duración termina, volver a Idle o Run
+            // If attack duration finishes, transition based on movement
             if (attackTimer >= attackDuration)
             {
                 attackFinished = true;
-                if (Mathf.Abs(player.moveInput) > 0.1f)
-                    stateMachine.ChangeState(stateMachine.runState);
+                if (Mathf.Abs(player.moveInput) > PlayerController.movementThreshold)
+                    stateMachine.ChangeState(stateMachine.walkingState);
                 else
                     stateMachine.ChangeState(stateMachine.idleState);
             }
@@ -46,13 +42,14 @@ namespace Assets.Scripts.Player.States
 
         public override void FixedUpdate()
         {
-            // Keep player still horizontally
+            // Keep player still horizontally during attack
             player.rb.linearVelocity = new Vector3(0, player.rb.linearVelocity.y, 0);
         }
 
         public override void Exit()
         {
             Debug.Log("Player exited Attacking state");
+            player.animator.SetBool("IsAttacking", false);
             attackFinished = false;
         }
     }

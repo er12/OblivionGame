@@ -7,6 +7,7 @@ namespace Assets.Scripts.Player.States
         private PlayerController playerController;
 
         public PlayerIdleState idleState;
+        public PlayerWalkingState walkingState;
         public PlayerRunningState runState;
         public PlayerJumpingState jumpState;
         public PlayerAttackingState attackState;
@@ -15,15 +16,14 @@ namespace Assets.Scripts.Player.States
         {
             playerController = GetComponent<PlayerController>();
 
-            // Create states here, passing "this" as machine reference
+            // Create states, passing "this" as machine reference
             idleState = new PlayerIdleState(playerController, this);
+            walkingState = new PlayerWalkingState(playerController, this);
             runState = new PlayerRunningState(playerController, this);
             jumpState = new PlayerJumpingState(playerController, this);
             attackState = new PlayerAttackingState(playerController, this);
 
             Initialize(idleState);  // start with idle
         }
-
     }
-
 }

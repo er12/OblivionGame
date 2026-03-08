@@ -4,8 +4,6 @@ namespace Assets.Scripts.Player.States
 {
     public class PlayerJumpingState : PlayerStateBase
     {
-        private bool hasJumped;
-
         public PlayerJumpingState(PlayerController player, PlayerStateMachine stateMachine) 
             : base(player, stateMachine) { }
 
@@ -14,18 +12,27 @@ namespace Assets.Scripts.Player.States
             Debug.Log("Player entered Jumping state");
 
             // Apply jump impulse
-            player.rb.linearVelocity = new Vector3(player.rb.linearVelocity.x, player.jumpForce, player.rb.linearVelocity.z);
-            // hasJumped = true;
-            player.jumpPressed = false; 
+            player.rb.linearVelocity = new Vector3(
+                player.rb.linearVelocity.x, 
+                player.jumpForce, 
+                player.rb.linearVelocity.z
+            );
+            
+            player.jumpPressed = false;
+            player.animator.SetBool("IsJumping", true);
         }
 
         public override void Update()
         {
-            // Si ya tocó el suelo, volver al Idle o Running
-            if (player.isGrounded)
+            // Check if grounded to transition out of jump
+            // Added small delay to prevent immediate landing
+            if (player.isGrounded && player.rb.linearVelocity.y <= 0)
             {
-                if (Mathf.Abs(player.moveInput) > 0.1f)
-                    stateMachine.ChangeState(stateMachine.runState);
+                Debug.Log("Player landed! Transitioning to: " + (Mathf.Abs(player.moveInput) > PlayerController.movementThreshold ? "Walking" : "Idle"));
+                
+                // Land in walking or idle based on input
+                if (Mathf.Abs(player.moveInput) > PlayerController.movementThreshold)
+                    stateMachine.ChangeState(stateMachine.walkingState);
                 else
                     stateMachine.ChangeState(stateMachine.idleState);
 
@@ -40,7 +47,7 @@ namespace Assets.Scripts.Player.States
 
         public override void Exit()
         {
-            // Reset de variables si es necesario
+            player.animator.SetBool("IsJumping", false);
         }
 
         private void HandleAirMovement()
@@ -48,8 +55,12 @@ namespace Assets.Scripts.Player.States
             float moveInput = player.moveInput;
             Rigidbody rb = player.rb;
 
-            // Allow movement in the air
-            rb.linearVelocity = new Vector3(moveInput * player.runSpeed, rb.linearVelocity.y, rb.linearVelocity.z);
+            // Allow smooth movement in the air
+            float targetVelocity = moveInput * player.runSpeed;
+            float currentVelocity = rb.linearVelocity.x;
+            float newVelocity = Mathf.Lerp(currentVelocity, targetVelocity, Time.fixedDeltaTime * 3f);
+            
+            rb.linearVelocity = new Vector3(newVelocity, rb.linearVelocity.y, rb.linearVelocity.z);
 
             if (moveInput != 0)
                 player.FlipCharacter(moveInput);

@@ -2,87 +2,161 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using Assets.Scripts.Player.States;
 
-[RequireComponent(typeof(Animator), typeof(Rigidbody))]
-
+[RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(PlayerInput))]
 public class PlayerController : MonoBehaviour
 {
+    [Header("Movement")]
     public float runSpeed = 5f;
     public float jumpForce = 12f;
-
-    [HideInInspector] public Rigidbody rb;
-    public Animator animator;   // reference
-
-
-    [HideInInspector] public PlayerInputActions input;
-    [HideInInspector] public float moveInput;
-    [HideInInspector] public bool isGrounded;
-    [HideInInspector] public bool jumpPressed;
+    public static float movementThreshold = 0.1f;
 
     [Header("Ground Check")]
     public Transform groundCheck;
     public float groundRadius = 0.1f;
     public LayerMask groundLayer;
 
-    public bool IsFalling => !isGrounded && rb.linearVelocity.y < 0;
+    [Header("References")]
+    public Animator animator; // Assign in inspector or finds automatically
 
-    public static float movementThreshold = 0.1f;
-
-
+    // Component references
+    [HideInInspector] public Rigidbody rb;
+    private PlayerInput playerInput;
     private PlayerStateMachine stateMachine;
-    // States
+
+    // Input state
+    [HideInInspector] public float moveInput;
+    [HideInInspector] public bool jumpPressed;
+    [HideInInspector] public bool isGrounded;
+
+    // Property for falling state
+    public bool IsFalling => !isGrounded && rb && rb.linearVelocity.y < 0;
 
     void Awake()
     {
+        // Get components
         rb = GetComponent<Rigidbody>();
-        input = new PlayerInputActions();
+        playerInput = GetComponent<PlayerInput>();
         stateMachine = GetComponent<PlayerStateMachine>();
-        animator = GetComponent<Animator>();
 
+        if (playerInput == null)
+        {
+            Debug.LogError("PlayerInput NOT FOUND! Add PlayerInput component to this GameObject!");
+        }
 
-    }
+        if (stateMachine == null)
+        {
+            Debug.LogError("PlayerStateMachine NOT FOUND! Add PlayerStateMachine component to this GameObject!");
+        }
 
-    void OnEnable()
-    {
-        input.Player.Enable();
-        input.Player.Move.performed += ctx => moveInput = ctx.ReadValue<float>();
-        input.Player.Move.canceled += ctx => moveInput = 0f;
-        input.Player.Jump.performed += ctx => jumpPressed = true;
-        input.Player.Attack.performed += ctx => stateMachine.ChangeState(stateMachine.attackState);
+        // Try to find animator on this object first, then check children
+        if (animator == null)
+        {
+            animator = GetComponent<Animator>();
+        }
+        if (animator == null)
+        {
+            animator = GetComponentInChildren<Animator>();
+        }
 
-    }
+        if (animator == null)
+        {
+            Debug.LogWarning("Animator not found on Player or children - animations will not work!");
+        }
+        else
+        {
+            Debug.Log("Animator found: " + animator.gameObject.name);
+        }
 
-    void OnDisable()
-    {
-        input.Player.Disable();
-    }
-
-    void Start()
-    {
-
+        Debug.Log("PlayerController initialized successfully!");
+        
+        // Check Ground Check setup
+        if (groundCheck == null)
+        {
+            Debug.LogWarning("GroundCheck transform is not assigned!");
+        }
+        if (groundLayer == 0)
+        {
+            Debug.LogWarning("Ground Layer is not set! Make sure to assign the Ground layer.");
+        }
     }
 
     void Update()
     {
-        animator.SetFloat("Speed", Mathf.Abs(moveInput));
-        Debug.Log("input" + moveInput);
+        // Safety checks
+        if (playerInput == null || stateMachine == null)
+        {
+            return;
+        }
 
-        isGrounded = Physics.OverlapSphere(groundCheck.position, groundRadius, groundLayer).Length > 0;
+        // Get input directly from PlayerInput
+        GetInput();
+        
+        // Update animator - Speed blends Walk/Run in the Blend Tree
+        if (animator != null)
+        {
+            // Map moveInput (-1 to 1) to Speed parameter (scale up for bigger range)
+            animator.SetFloat("Speed", Mathf.Abs(moveInput) * 2f);
+        }
+
+        // Check if grounded
+        if (groundCheck != null)
+        {
+            isGrounded = Physics.OverlapSphere(groundCheck.position, groundRadius, groundLayer).Length > 0;
+            
+            // Debug visualization
+            Debug.DrawLine(groundCheck.position, groundCheck.position + Vector3.down * groundRadius, 
+                isGrounded ? Color.green : Color.red);
+        }
+        
+        // Update state machine
         stateMachine.UpdateState();
-
     }
 
     void FixedUpdate()
     {
-        stateMachine.FixedUpdateState();
+        if (stateMachine != null)
+        {
+            stateMachine.FixedUpdateState();
+        }
+    }
+
+    private void GetInput()
+    {
+        // Get movement input (1D axis for platformer - just horizontal)
+        var moveAction = playerInput.actions["Move"];
+        if (moveAction != null)
+        {
+            // Read as float since Move is a 1D Axis, not 2D
+            float rawInput = moveAction.ReadValue<float>();
+            
+            // Apply deadzone to prevent tiny movements
+            moveInput = Mathf.Abs(rawInput) < 0.1f ? 0f : rawInput;
+        }
+        else
+        {
+            moveInput = 0f;
+            Debug.LogWarning("Move action not found in PlayerInputActions!");
+        }
+
+        // Get jump input
+        var jumpAction = playerInput.actions["Jump"];
+        if (jumpAction != null)
+        {
+            jumpPressed = jumpAction.triggered;
+        }
+        else
+        {
+            Debug.LogWarning("Jump action not found in PlayerInputActions!");
+        }
     }
 
     public void FlipCharacter(float direction)
     {
-        // For 2.5D, rotate the character model on the Y axis
+        // For 2.5D, rotate the parent (not the model child)
         if (direction > 0)
             transform.rotation = Quaternion.Euler(0, 0, 0);
         else if (direction < 0)
             transform.rotation = Quaternion.Euler(0, 180, 0);
     }
-
 }
