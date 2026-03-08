@@ -24,6 +24,9 @@ namespace Assets.Scripts.Player.States
 
         public override void Update()
         {
+            // Debug: Show jump state info
+            Debug.Log($"Jump Debug - isGrounded: {player.isGrounded}, velocity.y: {player.rb.linearVelocity.y:F2}");
+            
             // Check if grounded to transition out of jump
             // Added small delay to prevent immediate landing
             if (player.isGrounded && player.rb.linearVelocity.y <= 0)

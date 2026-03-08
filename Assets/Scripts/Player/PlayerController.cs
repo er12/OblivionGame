@@ -75,9 +75,18 @@ public class PlayerController : MonoBehaviour
         {
             Debug.LogWarning("GroundCheck transform is not assigned!");
         }
+        else
+        {
+            Debug.Log($"GroundCheck position: {groundCheck.position}, GroundCheck layer: {LayerMask.LayerToName(groundCheck.gameObject.layer)}");
+        }
+        
         if (groundLayer == 0)
         {
             Debug.LogWarning("Ground Layer is not set! Make sure to assign the Ground layer.");
+        }
+        else
+        {
+            Debug.Log($"Ground layer mask set to: {groundLayer.value}");
         }
     }
 
@@ -99,14 +108,45 @@ public class PlayerController : MonoBehaviour
             animator.SetFloat("Speed", Mathf.Abs(moveInput) * 2f);
         }
 
-        // Check if grounded
+        // Check if grounded using Raycast (more reliable than OverlapSphere)
         if (groundCheck != null)
         {
-            isGrounded = Physics.OverlapSphere(groundCheck.position, groundRadius, groundLayer).Length > 0;
+            // Cast a ray downward from GroundCheck position
+            RaycastHit hit;
+            bool hitGround = Physics.Raycast(
+                groundCheck.position,          // Start position
+                Vector3.down,                  // Direction (downward)
+                out hit,                       // Hit info
+                groundRadius,                  // Max distance
+                groundLayer,                   // Layer mask
+                QueryTriggerInteraction.Ignore // Ignore triggers
+            );
             
-            // Debug visualization
-            Debug.DrawLine(groundCheck.position, groundCheck.position + Vector3.down * groundRadius, 
-                isGrounded ? Color.green : Color.red);
+            bool wasGrounded = isGrounded;
+            isGrounded = hitGround;
+            
+            // DETAILED DEBUG LOG
+            if (hitGround)
+            {
+                Debug.Log($"✓ RAY HIT: {hit.collider.gameObject.name} (layer: {LayerMask.LayerToName(hit.collider.gameObject.layer)}) at distance {hit.distance}");
+            }
+            else
+            {
+                Debug.Log($"✗ RAY MISSED - Raycast from {groundCheck.position} downward {groundRadius} units found nothing");
+            }
+            
+            // Log state changes
+            if (isGrounded != wasGrounded)
+            {
+                if (isGrounded)
+                    Debug.Log("✓ GROUNDED - Raycast hit ground");
+                else
+                    Debug.Log("✗ AIRBORNE - Raycast missed ground");
+            }
+            
+            // Debug visualization - ray color based on detection
+            Color debugColor = isGrounded ? Color.green : Color.red;
+            Debug.DrawRay(groundCheck.position, Vector3.down * groundRadius, debugColor);
         }
         
         // Update state machine
