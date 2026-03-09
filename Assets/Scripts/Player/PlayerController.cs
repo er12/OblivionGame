@@ -125,25 +125,6 @@ public class PlayerController : MonoBehaviour
             bool wasGrounded = isGrounded;
             isGrounded = hitGround;
             
-            // DETAILED DEBUG LOG
-            if (hitGround)
-            {
-                Debug.Log($"✓ RAY HIT: {hit.collider.gameObject.name} (layer: {LayerMask.LayerToName(hit.collider.gameObject.layer)}) at distance {hit.distance}");
-            }
-            else
-            {
-                Debug.Log($"✗ RAY MISSED - Raycast from {groundCheck.position} downward {groundRadius} units found nothing");
-            }
-            
-            // Log state changes
-            if (isGrounded != wasGrounded)
-            {
-                if (isGrounded)
-                    Debug.Log("✓ GROUNDED - Raycast hit ground");
-                else
-                    Debug.Log("✗ AIRBORNE - Raycast missed ground");
-            }
-            
             // Debug visualization - ray color based on detection
             Color debugColor = isGrounded ? Color.green : Color.red;
             Debug.DrawRay(groundCheck.position, Vector3.down * groundRadius, debugColor);
