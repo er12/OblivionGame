@@ -67,5 +67,5 @@
         "*.sln": "*.csproj",
         "*.slnx": "*.csproj"
     },
-    "dotnet.defaultSolution": "OblivionGame.slnx"
+    "dotnet.defaultSolution": "Code-Oblivion.slnx"
 }
