@@ -100,6 +100,12 @@ public class PlayerController : MonoBehaviour
 
         // Get input directly from PlayerInput
         GetInput();
+
+        //voltear al personaje
+        if (Mathf.Abs(moveInput) > movementThreshold)
+    {
+        FlipCharacter(moveInput);
+    }
         
         // Update animator - Speed blends Walk/Run in the Blend Tree
         if (animator != null)
@@ -174,10 +180,9 @@ public class PlayerController : MonoBehaviour
 
     public void FlipCharacter(float direction)
     {
-        // For 2.5D, rotate the parent (not the model child)
         if (direction > 0)
-            transform.rotation = Quaternion.Euler(0, 0, 0);
+            transform.rotation = Quaternion.Euler(0, 90, 0);
         else if (direction < 0)
-            transform.rotation = Quaternion.Euler(0, 180, 0);
+            transform.rotation = Quaternion.Euler(0, -90, 0);
     }
 }
