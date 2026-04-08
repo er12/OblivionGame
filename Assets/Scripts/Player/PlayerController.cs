@@ -92,6 +92,8 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+
+
         // Safety checks
         if (playerInput == null || stateMachine == null)
         {
@@ -108,11 +110,35 @@ public class PlayerController : MonoBehaviour
     }
         
         // Update animator - Speed blends Walk/Run in the Blend Tree
-        if (animator != null)
+        // if (animator != null)
+        // {
+        //     // Map moveInput (-1 to 1) to Speed parameter (scale up for bigger range)
+        //     animator.SetFloat("Speed", Mathf.Abs(moveInput) * 2f);
+        // }
+
+        float absInput = Mathf.Abs(moveInput);
+
+        // Detectar correr (joystick al máximo)
+        bool isRunning = absInput >= 0.7f;
+
+        // Valor final para el Blend Tree
+        float speedValue;
+
+        if (absInput < movementThreshold)
         {
-            // Map moveInput (-1 to 1) to Speed parameter (scale up for bigger range)
-            animator.SetFloat("Speed", Mathf.Abs(moveInput) * 2f);
+            speedValue = 0f; // Idle
         }
+        else if (isRunning)
+        {
+            speedValue = 1f; // Run
+        }
+        else
+        {
+            speedValue = 0.5f; // Walk
+        }
+
+        // Aplicar al Animator con suavizado
+        animator.SetFloat("Speed", speedValue, 0.1f, Time.deltaTime);
 
         // Check if grounded using Raycast (more reliable than OverlapSphere)
         if (groundCheck != null)
