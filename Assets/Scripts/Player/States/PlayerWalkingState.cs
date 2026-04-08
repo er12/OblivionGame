@@ -32,6 +32,20 @@ namespace Assets.Scripts.Player.States
         {
             float moveInput = player.moveInput;
 
+            // Transition to Light Attack if light attack button pressed
+            if (player.lightAttackPressed)
+            {
+                stateMachine.ChangeState(stateMachine.lightAttackState);
+                return;
+            }
+
+            // Transition to Heavy Attack if heavy attack button pressed
+            if (player.heavyAttackPressed)
+            {
+                stateMachine.ChangeState(stateMachine.heavyAttackState);
+                return;
+            }
+
             // Transition to Idle if no horizontal input
             if (Mathf.Abs(moveInput) < PlayerController.movementThreshold)
             {

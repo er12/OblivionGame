@@ -12,7 +12,8 @@ namespace Assets.Scripts.Scripts.Framework.Input
         private PlayerInput playerInput;
         private InputAction moveAction;
         private InputAction jumpAction;
-        private InputAction attackAction;
+        private InputAction lightAttackAction;
+        private InputAction heavyAttackAction;
 
         // Track jump state
         private bool jumpPressed;
@@ -41,7 +42,8 @@ namespace Assets.Scripts.Scripts.Framework.Input
             {
                 moveAction = actionMap.FindAction("Move");
                 jumpAction = actionMap.FindAction("Jump");
-                attackAction = actionMap.FindAction("Attack");
+                lightAttackAction = actionMap.FindAction("LightAttack");
+                heavyAttackAction = actionMap.FindAction("HeavyAttack");
 
                 // Subscribe to jump events for proper press detection
                 if (jumpAction != null)
@@ -82,10 +84,11 @@ namespace Assets.Scripts.Scripts.Framework.Input
         public InputCommand GetInputCommand()
         {
             float movement = GetMovementInput();
-            bool attack = GetInputActionPressed(attackAction, KeyCode.Mouse0);
+            bool lightAttack = GetInputActionPressed(lightAttackAction, KeyCode.X);
+            bool heavyAttack = GetInputActionPressed(heavyAttackAction, KeyCode.Z);
 
             // Create command with jump input
-            InputCommand command = new InputCommand(movement, jumpPressed, jumpHeld, attack);
+            InputCommand command = new InputCommand(movement, jumpPressed, jumpHeld, lightAttack, heavyAttack);
             
             // Reset the jump pressed flag after reading it
             jumpPressed = false;
@@ -130,7 +133,8 @@ namespace Assets.Scripts.Scripts.Framework.Input
             return key switch
             {
                 KeyCode.Space => Keyboard.current.spaceKey.wasPressedThisFrame,
-                KeyCode.Mouse0 => Mouse.current.leftButton.wasPressedThisFrame,
+                KeyCode.X => Keyboard.current.xKey.wasPressedThisFrame,
+                KeyCode.Z => Keyboard.current.zKey.wasPressedThisFrame,
                 _ => false
             };
         }

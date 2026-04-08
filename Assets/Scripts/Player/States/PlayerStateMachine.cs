@@ -1,4 +1,5 @@
 using Assets.Scripts.StateMachine;
+using Assets.Scripts.Player.States.Combat;
 
 namespace Assets.Scripts.Player.States
 {
@@ -10,7 +11,8 @@ namespace Assets.Scripts.Player.States
         public PlayerWalkingState walkingState;
         public PlayerRunningState runState;
         public PlayerJumpingState jumpState;
-        public PlayerAttackingState attackState;
+        public LightComboAttackState lightAttackState;
+        public HeavyComboAttackState heavyAttackState;
 
         void Awake()
         {
@@ -21,7 +23,8 @@ namespace Assets.Scripts.Player.States
             walkingState = new PlayerWalkingState(playerController, this);
             runState = new PlayerRunningState(playerController, this);
             jumpState = new PlayerJumpingState(playerController, this);
-            attackState = new PlayerAttackingState(playerController, this);
+            lightAttackState = new LightComboAttackState(playerController, this);
+            heavyAttackState = new HeavyComboAttackState(playerController, this);
 
             Initialize(idleState);  // start with idle
         }

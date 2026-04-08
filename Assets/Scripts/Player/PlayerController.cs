@@ -27,6 +27,8 @@ public class PlayerController : MonoBehaviour
     // Input state
     [HideInInspector] public float moveInput;
     [HideInInspector] public bool jumpPressed;
+    [HideInInspector] public bool lightAttackPressed;
+    [HideInInspector] public bool heavyAttackPressed;
     [HideInInspector] public bool isGrounded;
 
     // Property for falling state
@@ -175,6 +177,20 @@ public class PlayerController : MonoBehaviour
         else
         {
             Debug.LogWarning("Jump action not found in PlayerInputActions!");
+        }
+
+        // Get light attack input (e.g., X button)
+        var lightAttackAction = playerInput.actions["LightAttack"];
+        if (lightAttackAction != null)
+        {
+            lightAttackPressed = lightAttackAction.triggered;
+        }
+
+        // Get heavy attack input (e.g., Y button)
+        var heavyAttackAction = playerInput.actions["HeavyAttack"];
+        if (heavyAttackAction != null)
+        {
+            heavyAttackPressed = heavyAttackAction.triggered;
         }
     }
 
